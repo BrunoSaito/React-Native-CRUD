@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, Text, View, Keyboard } from "react-native";
+import { Text, View, Keyboard } from "react-native";
 import styles from '../../res/styles'
 import colors from '../../res/colors'
 import { Button, Input, Overlay } from 'react-native-elements';
@@ -26,7 +26,7 @@ export class Login extends React.Component {
         throw response;
     }
     return response.json();
-}
+  }
 
   _onLoginClicked = () => {
     Keyboard.dismiss()
@@ -37,18 +37,18 @@ export class Login extends React.Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        password: this.state.password,
-        email: this.state.email,
+        // password: this.state.password,
+        // email: this.state.email,
+        password: '1111',
+        email: 'admin@taqtile.com',
         rememberMe: false
       })
     })
     .then((response) => this.handleErrors(response))
-    .then((responseJson) => responseJson.data.user.active == true ? this.props.navigation.navigate("UserList") : this.setState({errorMessage: "Ocorreu um erro. Tente novamente."}))
+    .then((responseJson) => responseJson.data.user.active == true ? this.props.navigation.navigate("UserList", {token: responseJson.data.token}) : this.setState({errorMessage: "Ocorreu um erro. Tente novamente."}))
     .catch((error) => {
       error.json().then((errorMessage) => {
         this.setState({errorMessage: errorMessage.errors[0].message, valid: false})
-        
-        // Alert.alert()
       })
     });
   }
@@ -117,8 +117,8 @@ export class Login extends React.Component {
               title="Entrar"
               onPress={this._onLoginClicked}
               titleStyle={{ fontWeight: "700" }}
-              disabled={this.state.emailError == true || this.state.passwordError == true || 
-                this.state.password == "" || this.state.email == ""}
+              // disabled={this.state.emailError == true || this.state.passwordError == true || 
+              //           this.state.password == "" || this.state.email == ""}
               buttonStyle={{
                 backgroundColor: colors.grey,
                 height: 45,
