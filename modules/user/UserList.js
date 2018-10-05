@@ -69,7 +69,7 @@ export class UserList extends React.Component {
   keyExtractor = (item, index) => item.id;
 
   onPressListItem = (index) => {
-    console.log(index)
+    this.props.navigation.navigate("UserDetails", {token: this.props.navigation.state.params.token, userId: this.state.users[index].id})
   }
 
   onPressEdit = (index) => {

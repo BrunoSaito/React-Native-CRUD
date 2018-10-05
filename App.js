@@ -10,6 +10,9 @@ const RootStack = createStackNavigator({
   },
   UserList: {
    screen: UserList 
+  },
+  UserDetails: {
+    screen: UserDetails
   }
 }, {
   initialRouteName: "Login"
