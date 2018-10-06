@@ -47,17 +47,7 @@ export class Login extends React.Component {
     .then((response) => this.handleErrors(response))
     .then((responseJson) => {
       if (responseJson.data.user.active == true) {
-        // setValue = async (key, value) => {
-        //   await Expo.SecureStore.setItemAsync(key, value);
-        // }
-        // getValue = async (key) => {
-        //   const fetchedValue = await Expo.SecureStore.getItemAsync(key);
-        //   return fetchedValue
-        // }
-        // setValue("token", responseJson.data.token)
-        // getValue("token").then((token) => console.log("token: " + token))
-
-        Store("token", responseJson.data.token)
+        Store("set", "token", responseJson.data.token)
         this.props.navigation.navigate("UserList")
       }
       else {

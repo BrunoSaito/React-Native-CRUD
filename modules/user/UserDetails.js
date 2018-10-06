@@ -39,7 +39,7 @@ export class UserDetails extends React.Component {
     }
 
     componentWillMount() {
-        Store("token").then((token) => {
+        Store("get", "token").then((token) => {
             this.setState({token: token})
             this.getUserDetails()
         })
