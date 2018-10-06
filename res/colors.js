@@ -4,6 +4,8 @@ const colors = {
     contrast: '#FFF',
     red: "red",
     grey: "grey",
+    white: "white",
+    transparent: "transparent",
     light_red: "#ce4a4a"
   }
 

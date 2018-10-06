@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import { Login } from './modules/login/Login';
-import { UserList } from './modules/user-list/UserList';
-// import styled from 'styled-components';
+import { UserList } from './modules/user/UserList';
+import { UserDetails } from './modules/user/UserDetails';
 
 const RootStack = createStackNavigator({
   Login: {

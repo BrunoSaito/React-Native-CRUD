@@ -22,6 +22,11 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
       marginTop: 10
+    },
+    subtitleView: {
+      flexDirection: 'row',
+      paddingLeft: 10,
+      paddingTop: 5
     }
   });
 
