@@ -1,9 +1,8 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { ButtonAlert, ButtonNeutral } from '../../components/index';
-import styles from '../../res/styles';
-import colors from '../../res/colors';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React from 'react'
+import { View, Text } from 'react-native'
+import { ButtonAlert, ButtonNeutral } from '../../components/index'
+import styles from '../../res/styles'
+import Store from '../../components/Store'
 
 export class UserDetails extends React.Component {
     static navigationOptions = {
@@ -13,7 +12,8 @@ export class UserDetails extends React.Component {
     constructor(props) {
         super(props)
         this.state = {user: "",
-                      userName: ""}
+                      userName: "",
+                      token: ""}
     }
 
     handleErrors = (response) => {
@@ -26,7 +26,7 @@ export class UserDetails extends React.Component {
         fetch("https://tq-template-server-sample.herokuapp.com/users/" + this.props.navigation.state.params.userId, {
             method: "GET",
             headers: {
-                Authorization: this.props.navigation.state.params.token
+                Authorization: this.state.token
             },
         })
         .then((response) => this.handleErrors(response))
@@ -39,7 +39,10 @@ export class UserDetails extends React.Component {
     }
 
     componentWillMount() {
-        this.getUserDetails()
+        Store("token").then((token) => {
+            this.setState({token: token})
+            this.getUserDetails()
+        })
     }
 
     render() {

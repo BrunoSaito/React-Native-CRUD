@@ -1,9 +1,9 @@
-import React from 'react';
-import { FlatList, View, Text } from 'react-native';
-import { ListItem, Button } from 'react-native-elements'; 
-import styles from '../../res/styles';
-import colors from '../../res/colors';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React from 'react'
+import { FlatList, View, Text } from 'react-native'
+import { ListItem } from 'react-native-elements'
+import styles from '../../res/styles'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import Store from '../../components/Store'
 
 export class UserList extends React.Component {
   static navigationOptions = {
@@ -12,7 +12,8 @@ export class UserList extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {users: []}
+    this.state = {users: [],
+                  token: ""}
   }
 
   handleErrors = (response) => {
@@ -26,7 +27,7 @@ export class UserList extends React.Component {
     fetch("https://tq-template-server-sample.herokuapp.com/users?pagination={\"page\": 0 , \"window\": 30}", {
       method: "GET",
       headers: {
-        Authorization: this.props.navigation.state.params.token
+        Authorization: this.state.token
       },
     })
     .then((response) => this.handleErrors(response))
@@ -39,17 +40,20 @@ export class UserList extends React.Component {
   }
 
   componentWillMount() {
-    this.getUsersList()
+    Store("token").then((token) => {
+      this.setState({token: token})
+      this.getUsersList()
+    })
   }
 
   handleMore = () => {
     console.log("something very cool")
   }
-  
+
   keyExtractor = (item, index) => item.id.toString();
 
   onPressListItem = (index) => {
-    this.props.navigation.navigate("UserDetails", {token: this.props.navigation.state.params.token, userId: this.state.users[index].id})
+    this.props.navigation.navigate("UserDetails", {userId: this.state.users[index].id})
   }
 
   onPressEdit = (index) => {

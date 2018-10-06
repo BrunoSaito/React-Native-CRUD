@@ -1,10 +1,10 @@
-import React from "react";
-import { Text, View, Keyboard } from "react-native";
+import React from "react"
+import { Text, View, Keyboard } from "react-native"
 import styles from '../../res/styles'
 import colors from '../../res/colors'
-import { Button, Input, Overlay } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { Button, Input, Overlay } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import Store from '../../components/Store'
 
 export class Login extends React.Component {
   static navigationOptions = {
@@ -45,7 +45,25 @@ export class Login extends React.Component {
       })
     })
     .then((response) => this.handleErrors(response))
-    .then((responseJson) => responseJson.data.user.active == true ? this.props.navigation.navigate("UserList", {token: responseJson.data.token}) : this.setState({errorMessage: "Ocorreu um erro. Tente novamente."}))
+    .then((responseJson) => {
+      if (responseJson.data.user.active == true) {
+        // setValue = async (key, value) => {
+        //   await Expo.SecureStore.setItemAsync(key, value);
+        // }
+        // getValue = async (key) => {
+        //   const fetchedValue = await Expo.SecureStore.getItemAsync(key);
+        //   return fetchedValue
+        // }
+        // setValue("token", responseJson.data.token)
+        // getValue("token").then((token) => console.log("token: " + token))
+
+        Store("token", responseJson.data.token)
+        this.props.navigation.navigate("UserList")
+      }
+      else {
+        this.setState({errorMessage: "Ocorreu um erro. Tente novamente."})
+      }
+    })
     .catch((error) => {
       error.json().then((errorMessage) => {
         this.setState({errorMessage: errorMessage.errors[0].message, valid: false})
