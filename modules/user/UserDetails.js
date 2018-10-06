@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Button } from 'react-native-elements'; 
+import { ButtonAlert, ButtonNeutral } from '../../components/index';
 import styles from '../../res/styles';
 import colors from '../../res/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -12,8 +12,15 @@ export class UserDetails extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {user: "",
+                      userName: ""}
     }
+
+    handleErrors = (response) => {
+        if (!response.ok)
+            throw response
+        return response.json()
+      }
 
     getUserDetails = () => {
         fetch("https://tq-template-server-sample.herokuapp.com/users/" + this.props.navigation.state.params.userId, {
@@ -23,7 +30,7 @@ export class UserDetails extends React.Component {
             },
         })
         .then((response) => this.handleErrors(response))
-        .then((responseJson) => this.setState({users: responseJson.data}))
+        .then((responseJson) => this.setState({ user: responseJson.data }))
         .catch((error) => {
             error.json().then((errorMessage) => {
                 console.log(errorMessage)
@@ -32,13 +39,40 @@ export class UserDetails extends React.Component {
     }
 
     componentWillMount() {
-        console.log("userId: " + this.props.navigation.state.params.userId)
+        this.getUserDetails()
     }
 
     render() {
         return (
-            <View style={styles.container}>
-                <Text>Cool text</Text>
+            <View style={styles.MainContainer}>
+                    <View style={{flexDirection: "row"}}>
+                        <Text>Nome: </Text>
+                        <Text>{this.state.user.name}</Text>
+                    </View>
+
+                    <View style={{flexDirection: "row"}}>
+                        <Text>E-mail: </Text>
+                        <Text>{this.state.user.email}</Text>
+                    </View>
+
+                    <View style={{flexDirection: "row"}}>
+                        <Text>Cargo: </Text>
+                        <Text>{this.state.user.role}</Text>
+                    </View>
+
+                <View style={styles.bottomView}>
+                    <View style={{flexDirection: "row", justifyContent: "space-around"}}>
+                    <ButtonAlert
+                        title="Deletar"
+                        containerStyle={{width: "30%"}}
+                    />
+                    
+                    <ButtonNeutral
+                        title="Editar"
+                        containerStyle={{width: "30%"}}
+                    />
+                    </View>
+                </View>
             </View>
         );
     }

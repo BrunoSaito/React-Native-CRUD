@@ -45,28 +45,8 @@ export class UserList extends React.Component {
   handleMore = () => {
     console.log("something very cool")
   }
-
-  renderListCell (user, index) {
-    return (
-      <ListItem
-        key={index}
-        title={user.name}
-        subtitle={user.role}
-        onPress={() => this.onPress(index)}
-        bottomDivider
-        onEndReached={() => this.handleMore()}
-        onEndReachedThreshold={0}
-      />
-    )
-  }
-
-  renderList = () => {
-    return this.state.users.map((user, index) => (
-      this.renderListCell(user, index)
-    ))
-  }
-
-  keyExtractor = (item, index) => item.id;
+  
+  keyExtractor = (item, index) => item.id.toString();
 
   onPressListItem = (index) => {
     this.props.navigation.navigate("UserDetails", {token: this.props.navigation.state.params.token, userId: this.state.users[index].id})

@@ -142,13 +142,7 @@ export class Login extends React.Component {
             title="OK"
             onPress={() => this.setState({valid: true})}
             containerStyle={{marginTop:30}}
-            buttonStyle={{
-              backgroundColor: colors.grey,
-              height: 35,
-              borderColor: "transparent",
-              borderWidth: 0,
-              borderRadius: 5
-            }}
+            buttonStyle={styles.buttonNeutral}
             />
           </View>
         </Overlay>  
