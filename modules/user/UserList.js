@@ -1,6 +1,7 @@
 import React from 'react'
 import { FlatList, View, Text, ActivityIndicator } from 'react-native'
 import { ListItem } from 'react-native-elements'
+import { FloatingButton } from '../../components/index'
 import styles from '../../res/styles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Store from '../../components/Store'
@@ -116,6 +117,18 @@ export class UserList extends React.Component {
 
   keyExtractor = (item) => { return item.id.toString() }
 
+  onPressEdit = (index) => {
+    console.log("Editar usuário " + index)
+  }
+
+  onPressDelete = (index) => {
+    console.log("Deletar usuário " + index)
+  }
+
+  onPressCreate = () => {
+    console.log("Criar usuário ")
+  }
+
   renderFooter = () => {
     if (!this.state.loading) return null;
 
@@ -152,6 +165,9 @@ export class UserList extends React.Component {
           onEndReachedThreshold={1}
           ListFooterComponent={ this.renderFooter }
           removeClippedSubviews={true}
+        />
+        <FloatingButton
+        onPress={this.onPressCreate}
         />
       </View>
       </View>

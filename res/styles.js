@@ -69,6 +69,15 @@ const styles = StyleSheet.create({
       bottom: 0,
       alignItems: 'center',
       justifyContent: 'center'
+    },
+    floatingButton: {
+      width: 40,  
+      height: 40,   
+      borderRadius: 30,            
+      backgroundColor: colors.red,                                    
+      position: 'absolute',                                          
+      bottom: 10,                                                    
+      right: 10, 
     }
   });
 
