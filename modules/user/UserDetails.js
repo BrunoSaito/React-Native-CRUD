@@ -1,67 +1,29 @@
-import React from 'react'
-import { View, Text } from 'react-native'
-import { ButtonAlert, ButtonNeutral } from '../../components/index'
+import React, { Component } from 'react'
+import { View, Text, ActivityIndicator } from 'react-native'
+import { ButtonAlert, ButtonNeutral, Loading } from '../../components/index'
 import styles from '../../res/styles'
 import Store from '../../components/Store'
 
-export class UserDetails extends React.Component {
-    static navigationOptions = {
-        title: "Detalhes de Usuário"
-    };
-
-    constructor(props) {
-        super(props)
-        this.state = {user: "",
-                      userName: "",
-                      token: ""}
-    }
-
-    handleErrors = (response) => {
-        if (!response.ok)
-            throw response
-        return response.json()
-      }
-
-    getUserDetails = () => {
-        fetch("https://tq-template-server-sample.herokuapp.com/users/" + this.props.navigation.state.params.userId, {
-            method: "GET",
-            headers: {
-                Authorization: this.state.token
-            },
-        })
-        .then((response) => this.handleErrors(response))
-        .then((responseJson) => this.setState({ user: responseJson.data }))
-        .catch((error) => {
-            error.json().then((errorMessage) => {
-                console.log(errorMessage)
-            })
-        });
-    }
-
-    componentWillMount() {
-        Store("get", "token").then((token) => {
-            this.setState({token: token})
-            this.getUserDetails()
-        })
-    }
-
+class Details extends Component {
     render() {
+        if (this.props.visible == false) return null
+
         return (
             <View style={styles.MainContainer}>
-                    <View style={{flexDirection: "row"}}>
-                        <Text>Nome: </Text>
-                        <Text>{this.state.user.name}</Text>
-                    </View>
+                <View style={{flexDirection: "row"}}>
+                    <Text>Nome: </Text>
+                    <Text>{this.props.user.name}</Text>
+                </View>
 
-                    <View style={{flexDirection: "row"}}>
-                        <Text>E-mail: </Text>
-                        <Text>{this.state.user.email}</Text>
-                    </View>
+                <View style={{flexDirection: "row"}}>
+                    <Text>E-mail: </Text>
+                    <Text>{this.props.user.email}</Text>
+                </View>
 
-                    <View style={{flexDirection: "row"}}>
-                        <Text>Cargo: </Text>
-                        <Text>{this.state.user.role}</Text>
-                    </View>
+                <View style={{flexDirection: "row"}}>
+                    <Text>Cargo: </Text>
+                    <Text>{this.props.user.role}</Text>
+                </View>
 
                 <View style={styles.bottomView}>
                     <View style={{flexDirection: "row", justifyContent: "space-around"}}>
@@ -76,6 +38,77 @@ export class UserDetails extends React.Component {
                     />
                     </View>
                 </View>
+            </View>
+        );
+    }
+}
+
+export class UserDetails extends React.Component {
+    static navigationOptions = {
+        title: "Detalhes de Usuário"
+    };
+
+    constructor(props) {
+        super(props)
+        this.state = {user: "",
+                      userName: "",
+                      token: "",
+                      loading: false}
+    }
+
+    handleErrors = (response) => {
+        if (!response.ok)
+            throw response
+        return response.json()
+      }
+
+    getUserDetails = () => {
+        this.setState({ loading: true })
+        fetch("https://tq-template-server-sample.herokuapp.com/users/" + this.props.navigation.state.params.userId, {
+            method: "GET",
+            headers: {
+                Authorization: this.state.token
+            },
+        })
+        .then((response) => this.handleErrors(response))
+        .then((responseJson) => {
+            this.setState({ 
+                user: responseJson.data,
+                loading: false
+            })
+        })
+        .catch((error) => {
+            this.setState({ loading: false })
+            error.json().then((errorMessage) => {
+                console.log(errorMessage)
+            })
+        });
+    }
+
+    componentWillMount() {
+        Store("get", "token").then((token) => {
+            this.setState({token: token})
+            this.getUserDetails()
+        })
+    }
+
+    render() {
+        const loading = this.state.loading;
+        return (
+            <View style={styles.MainContainer}>
+            {/* {loading &&
+                <View style={styles.loading}>
+                  <ActivityIndicator size='large' />
+                </View>
+            } */}
+                <Loading
+                    loading={this.state.loading}
+                    text="Carregando..."
+                />
+                <Details
+                    visible={!loading}
+                    user={this.state.user}
+                />
             </View>
         );
     }

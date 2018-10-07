@@ -56,6 +56,7 @@ export class UserList extends React.Component {
     super(props)
     this.state = {users: [],
                   page: 0,
+                  totalPages: 0,
                   loading: false,
                   token: ""}
   }
@@ -69,28 +70,32 @@ export class UserList extends React.Component {
   }
 
   getUsersList = () => {
-    const { page } = this.state
-    this.setState({ loading: true })
-    const url = `https://tq-template-server-sample.herokuapp.com/users?pagination={\"page\": ${page}, \"window\": 10}`
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: this.state.token
-      },
-    })
-    .then((response) => this.handleErrors(response))
-    .then((responseJson) => { 
-      this.setState({
-        users: [...this.state.users, ...responseJson.data],
-        loading: false
+    const { page, totalPages } = this.state
+
+    if (page <= totalPages) {
+      this.setState({ loading: true })
+      const url = `https://tq-template-server-sample.herokuapp.com/users?pagination={\"page\": ${page}, \"window\": 10}`
+      fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: this.state.token
+        },
       })
-    }) 
-    .catch((error) => {
-      this.setState({ loading: false })
-      error.json().then((errorMessage) => {
-        console.log("errorMessage" + errorMessage)
-      })
-    });
+      .then((response) => this.handleErrors(response))
+      .then((responseJson) => { 
+        this.setState({
+          users: [...this.state.users, ...responseJson.data],
+          totalPages: responseJson.pagination.totalPages,
+          loading: false
+        })
+      }) 
+      .catch((error) => {
+        this.setState({ loading: false })
+        error.json().then((errorMessage) => {
+          console.log("errorMessage" + errorMessage)
+        })
+      });
+    }
   }
 
   componentDidMount() {
@@ -120,8 +125,7 @@ export class UserList extends React.Component {
           paddingVertical: 20,
           borderTopWidth: 1,
           borderColor: "#CED0CE"
-        }}
-      >
+        }}>
         <ActivityIndicator animating size="large" />
       </View>
     );
@@ -147,7 +151,6 @@ export class UserList extends React.Component {
           onEndReached={() => this.handleMore()}
           onEndReachedThreshold={1}
           ListFooterComponent={ this.renderFooter }
-
           removeClippedSubviews={true}
         />
       </View>
