@@ -1,10 +1,10 @@
-import React from "react";
-import { Text, View, Keyboard } from "react-native";
+import React from "react"
+import { Text, View, Keyboard } from "react-native"
 import styles from '../../res/styles'
 import colors from '../../res/colors'
-import { Button, Input, Overlay } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { Button, Input, Overlay } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import Store from '../../components/Store'
 
 export class Login extends React.Component {
   static navigationOptions = {
@@ -45,7 +45,15 @@ export class Login extends React.Component {
       })
     })
     .then((response) => this.handleErrors(response))
-    .then((responseJson) => responseJson.data.user.active == true ? this.props.navigation.navigate("UserList", {token: responseJson.data.token}) : this.setState({errorMessage: "Ocorreu um erro. Tente novamente."}))
+    .then((responseJson) => {
+      if (responseJson.data.user.active == true) {
+        Store("set", "token", responseJson.data.token)
+        this.props.navigation.navigate("UserList")
+      }
+      else {
+        this.setState({errorMessage: "Ocorreu um erro. Tente novamente."})
+      }
+    })
     .catch((error) => {
       error.json().then((errorMessage) => {
         this.setState({errorMessage: errorMessage.errors[0].message, valid: false})
@@ -142,13 +150,7 @@ export class Login extends React.Component {
             title="OK"
             onPress={() => this.setState({valid: true})}
             containerStyle={{marginTop:30}}
-            buttonStyle={{
-              backgroundColor: colors.grey,
-              height: 35,
-              borderColor: "transparent",
-              borderWidth: 0,
-              borderRadius: 5
-            }}
+            buttonStyle={styles.buttonNeutral}
             />
           </View>
         </Overlay>  
