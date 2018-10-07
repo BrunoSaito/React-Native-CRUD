@@ -61,6 +61,11 @@ const styles = StyleSheet.create({
       paddingLeft: 10,
       paddingTop: 5
     },
+    footerLoading: {
+      paddingVertical: 20,
+      borderTopWidth: 1,
+      borderColor: colors.footer
+    },
     loading: {
       position: 'absolute',
       left: 0,

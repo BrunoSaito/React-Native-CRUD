@@ -8,11 +8,11 @@ import Store from '../../components/Store'
 
 class UserListItem extends React.PureComponent {
   onPressListItem = () => {
-    this.props.navigation.navigate("UserDetails", {userId: this.props.item.id})
+    this.props.navigation.navigate('UserDetails', {userId: this.props.item.id})
   }
 
-  onPressEdit = (index) => {
-    console.log("Editar usuário " + index)
+  onPressEdit = (item) => {
+    this.props.navigation.navigate('UserForm', {header: 'Editar Usuário', user: item, form: 'update'})
   }
 
   onPressDelete = (index) => {
@@ -32,13 +32,13 @@ class UserListItem extends React.PureComponent {
               name='edit'
               size={20}
               color='black'
-              onPress={() => this.onPressEdit(this.props.index)} />
+              onPress={() => this.onPressEdit(this.props.item)} />
 
             <Icon
               name='trash'
               size={20}
               color='black'
-              onPress={() => this.onPressDelete(this.props.index)} />
+              onPress={() => this.onPressDelete(this.props.item)} />
         </View>
       }
       onPress={() => this.onPressListItem()}
@@ -72,7 +72,6 @@ export class UserList extends React.Component {
 
   getUsersList = () => {
     const { page, totalPages } = this.state
-
     if (page <= totalPages) {
       this.setState({ loading: true })
       const url = `https://tq-template-server-sample.herokuapp.com/users?pagination={\"page\": ${page}, \"window\": 10}`
@@ -117,16 +116,8 @@ export class UserList extends React.Component {
 
   keyExtractor = (item) => { return item.id.toString() }
 
-  onPressEdit = (index) => {
-    console.log("Editar usuário " + index)
-  }
-
-  onPressDelete = (index) => {
-    console.log("Deletar usuário " + index)
-  }
-
   onPressCreate = () => {
-    console.log("Criar usuário ")
+    this.props.navigation.navigate('UserForm', {header: 'Novo Usuário', form: 'create'})
   }
 
   renderFooter = () => {
@@ -134,11 +125,7 @@ export class UserList extends React.Component {
 
     return (
       <View
-        style={{
-          paddingVertical: 20,
-          borderTopWidth: 1,
-          borderColor: "#CED0CE"
-        }}>
+        style={styles.footerLoading}>
         <ActivityIndicator animating size="large" />
       </View>
     );

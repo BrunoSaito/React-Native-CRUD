@@ -62,7 +62,7 @@ export class Login extends React.Component {
   }
 
   validateEmail = () => {
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ 
 
     if (reg.test(this.state.email) === false) {
       this.setState({emailError: true})
@@ -130,7 +130,6 @@ export class Login extends React.Component {
               buttonStyle={{
                 backgroundColor: colors.grey,
                 height: 45,
-                borderColor: "transparent",
                 borderWidth: 0,
                 borderRadius: 5
               }}
