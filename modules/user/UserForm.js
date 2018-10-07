@@ -3,6 +3,7 @@ import { View, Picker, Platform } from 'react-native'
 import { Input, Text, Button } from 'react-native-elements'
 import styles from '../../res/styles'
 import colors from '../../res/colors'
+import Store from '../../components/Store'
 
 export class UserForm extends React.Component {
     static navigationOptions = ({ navigation }) => ({
@@ -11,8 +12,8 @@ export class UserForm extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {name: "",
-                      nameError: false,
+        this.state = {user: "",
+                      userError: false,
                       password: "",
                       passwordError: false,
                       email: "",
@@ -22,12 +23,12 @@ export class UserForm extends React.Component {
                       loading: false}
     }
 
-    validateName = () => {
+    validateUser = () => {
         let reg = /\d/
-        if (this.state.name.length == 0 || reg.test(this.state.name))
-            this.setState({ nameError: true })
+        if (this.state.user.length == 0 || reg.test(this.state.user))
+            this.setState({ userError: true })
         else
-            this.setState({ nameError: false })
+            this.setState({ userError: false })
     }
 
     validatePassword = () => {
@@ -50,17 +51,77 @@ export class UserForm extends React.Component {
         }
     }
 
+    componentWillMount() {
+        if (this.props.navigation.state.params.form == 'update') {
+            this.setState({
+                user: this.props.navigation.state.params.user.name,
+                email: this.props.navigation.state.params.user.email,
+                role: this.props.navigation.state.params.user.role
+            })
+        }
+        Store("get", "token").then((token) => {
+            this.setState({token: token})
+        })
+    }
+
+    handleErrors = (response) => {
+        if (!response.ok) {
+            throw response;
+        }
+        Store("set", "token", response.headers.get("Authorization"))
+        return response.json();
+    }
+
+    updateUser = () => {
+
+    }
+
+    createUser = () => {
+        fetch("https://tq-template-server-sample.herokuapp.com/users", {
+            method: "POST",
+            headers: {
+                Authorization: this.state.token,
+            },
+            body: JSON.stringify({
+                name: 'usuario mockado',
+                password: 'senha1234',
+                email: 'ldiasidjas@dasdas.com',
+                role: 'admin'
+                // name: this.state.user,
+                // password: this.state.password,
+                // email: this.state.email,
+                // role: this.state.role
+            })
+        })
+        .then((response) => this.handleErrors(response))
+        .then((responseJson) => {
+        if (responseJson.data.user.active == true) {
+            Store("set", "token", responseJson.data.token)
+            this.props.navigation.navigate("UserList")
+        }
+        else {
+            this.setState({errorMessage: "Ocorreu um erro. Tente novamente."})
+        }
+        })
+        .catch((error) => {
+            console.log(error)
+            error.json().then((errorMessage) => {
+                this.setState({errorMessage: errorMessage.errors[0].message, valid: false})
+            })
+        });
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <View style={{alignItems: "center", marginTop: 10}}>
                 <Input
-                    onChangeText={(name) => this.setState({name: name})}
-                    onBlur={this.validateName}
-                    value={this.props.navigation.state.params.form == 'update' ? this.props.navigation.state.params.user.name : ''}
+                    onChangeText={(user) => this.setState({user: user})}
+                    onBlur={this.validateUser}
+                    defaultValue={this.props.navigation.state.params.form == 'update' ? this.state.user : ''}
                     placeholder='Nome'
-                    inputContainerStyle={this.state.nameError == true ? { borderBottomColor: colors.light_red} : {backgroundColor: 'white'}}
-                    errorStyle={this.state.nameError == true ? { color: 'red' } : { color: 'white' }}
+                    inputContainerStyle={this.state.userError == true ? { borderBottomColor: colors.light_red} : {backgroundColor: 'white'}}
+                    errorStyle={this.state.userError == true ? { color: 'red' } : { color: 'white' }}
                     errorMessage={'Por favor, insira um nome válido.'}
                 />
 
@@ -79,7 +140,7 @@ export class UserForm extends React.Component {
                 <Input
                     onChangeText={(email) => this.setState({email: email})}
                     onBlur={this.validateEmail}
-                    value={this.props.navigation.state.params.form == 'update' ? this.props.navigation.state.params.user.email : ''}
+                    defaultValue={this.props.navigation.state.params.form == 'update' ? this.state.email : ''}
                     placeholder='E-mail'
                     inputContainerStyle={this.state.emailError == true ? { borderBottomColor: colors.light_red} : {backgroundColor: 'white'}}
                     errorStyle={this.state.emailError == true ? { color: 'red' } : { color: 'white' }}
@@ -88,7 +149,7 @@ export class UserForm extends React.Component {
 
                 <Text style={{fontSize: 20}}>Cargo:</Text>
                 <Picker
-                    selectedValue={this.props.navigation.state.params.form == 'update' ? this.props.navigation.state.params.user.role : ""}
+                    selectedValue={this.state.role}
                     style={Platform.OS === 'ios' ? { height: 100, width: '80%' } : {height: 50, width: '80%'}}
                     itemStyle={Platform.OS === 'ios' ? { height: 100 } : {}}
                     onValueChange={(itemValue, itemIndex) => this.setState({role: itemValue})}>
@@ -100,7 +161,7 @@ export class UserForm extends React.Component {
                 <View style={[styles.buttonContainer, {padding: 10}]}>
                     <Button
                     title={this.props.navigation.state.params.form == 'create' ? 'Criar' : 'Editar'}
-                    onPress={this.onSubmit}
+                    onPress={this.props.navigation.state.params.form == 'create' ? this.createUser : this.updateUser}
                     titleStyle={{ fontWeight: "700" }}
                     disabled={this.state.emailError == true || this.state.passwordError == true || 
                               this.state.password == "" || this.state.email == ""}

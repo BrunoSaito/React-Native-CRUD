@@ -4,13 +4,14 @@ import colors from './colors';
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: colors.white,
       alignItems: 'stretch',
     },
     MainContainer:
     {
       marginLeft: 10,
       marginRight: 10,
+      backgroundColor: colors.white,
       flex: 1,
       paddingTop: 10
     },

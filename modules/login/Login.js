@@ -28,8 +28,7 @@ export class Login extends React.Component {
     return response.json();
   }
 
-  _onLoginClicked = () => {
-    Keyboard.dismiss()
+  login = () => {
     fetch("https://tq-template-server-sample.herokuapp.com/authenticate", {
       method: "POST",
       headers: {
@@ -37,10 +36,10 @@ export class Login extends React.Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        // password: this.state.password,
-        // email: this.state.email,
-        password: '1111',
-        email: 'admin@taqtile.com',
+        password: this.state.password,
+        email: this.state.email,
+        // password: '1111',
+        // email: 'admin@taqtile.com',
         rememberMe: false
       })
     })
@@ -59,6 +58,11 @@ export class Login extends React.Component {
         this.setState({errorMessage: errorMessage.errors[0].message, valid: false})
       })
     });
+  }
+
+  onLoginClicked = () => {
+    Keyboard.dismiss()
+    this.login()
   }
 
   validateEmail = () => {
@@ -123,7 +127,7 @@ export class Login extends React.Component {
           <View style={styles.buttonContainer}>
             <Button
               title="Entrar"
-              onPress={this._onLoginClicked}
+              onPress={this.onLoginClicked}
               titleStyle={{ fontWeight: "700" }}
               // disabled={this.state.emailError == true || this.state.passwordError == true || 
               //           this.state.password == "" || this.state.email == ""}
