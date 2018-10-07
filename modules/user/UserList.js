@@ -5,6 +5,48 @@ import styles from '../../res/styles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Store from '../../components/Store'
 
+class UserListItem extends React.PureComponent {
+  onPressListItem = () => {
+    this.props.navigation.navigate("UserDetails", {userId: this.props.item.id})
+  }
+
+  onPressEdit = (index) => {
+    console.log("Editar usuário " + index)
+  }
+
+  onPressDelete = (index) => {
+    console.log("Deletar usuário " + index)
+  }
+
+  render() {
+    return (
+      <ListItem
+      title={this.props.item.name}
+      subtitle={
+          <Text>{this.props.item.role}</Text>
+      }
+      rightIcon={
+        <View style={{flexDirection: "column"}}>
+            <Icon
+              name='edit'
+              size={20}
+              color='black'
+              onPress={() => this.onPressEdit(this.props.index)} />
+
+            <Icon
+              name='trash'
+              size={20}
+              color='black'
+              onPress={() => this.onPressDelete(this.props.index)} />
+        </View>
+      }
+      onPress={() => this.onPressListItem()}
+      bottomDivider
+    />
+    );
+  }
+}
+
 export class UserList extends React.Component {
   static navigationOptions = {
     title: "Lista de Usuários"
@@ -39,10 +81,10 @@ export class UserList extends React.Component {
     .then((response) => this.handleErrors(response))
     .then((responseJson) => { 
       this.setState({
-        users: [...this.state.users, ...responseJson.data], page: this.state.page + 1,
+        users: [...this.state.users, ...responseJson.data],
         loading: false
       })
-    })
+    }) 
     .catch((error) => {
       this.setState({ loading: false })
       error.json().then((errorMessage) => {
@@ -51,7 +93,7 @@ export class UserList extends React.Component {
     });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     Store("get", "token").then((token) => {
       this.setState({token: token})
       this.getUsersList()
@@ -59,22 +101,15 @@ export class UserList extends React.Component {
   }
 
   handleMore = () => {
-    this.getUsersList()
+    this.setState({
+      page: this.state.page + 1
+    },
+    () => {
+      this.getUsersList()
+    })
   }
 
   keyExtractor = (item) => { return item.id.toString() }
-
-  onPressListItem = (index) => {
-    this.props.navigation.navigate("UserDetails", {userId: this.state.users[index].id})
-  }
-
-  onPressEdit = (index) => {
-    console.log("Editar usuário " + index)
-  }
-
-  onPressDelete = (index) => {
-    console.log("Deletar usuário " + index)
-  }
 
   renderFooter = () => {
     if (!this.state.loading) return null;
@@ -93,31 +128,10 @@ export class UserList extends React.Component {
   };
 
   renderItem = ({ item, index }) => (
-    <ListItem
-      title={item.name}
-      subtitle={
-        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-          <Text>{item.role}</Text>
-          <Text>{item.id}</Text>
-        </View>
-      }
-      rightIcon={
-        <View style={{flexDirection: "column"}}>
-            <Icon
-              name='edit'
-              size={20}
-              color='black'
-              onPress={() => this.onPressEdit(index)} />
-
-            <Icon
-              name='trash'
-              size={20}
-              color='black'
-              onPress={() => this.onPressDelete(index)} />
-        </View>
-      }
-      onPress={() => this.onPressListItem(index)}
-      bottomDivider
+    <UserListItem 
+      item={item}
+      index={index}
+      navigation={this.props.navigation}
     />
   )
 
@@ -131,8 +145,10 @@ export class UserList extends React.Component {
           data={ this.state.users }
           renderItem={ this.renderItem }
           onEndReached={() => this.handleMore()}
-          onEndReachedThreshold={0}
+          onEndReachedThreshold={1}
           ListFooterComponent={ this.renderFooter }
+
+          removeClippedSubviews={true}
         />
       </View>
       </View>
