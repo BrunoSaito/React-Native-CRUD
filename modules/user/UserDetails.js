@@ -95,6 +95,7 @@ export class UserDetails extends React.Component {
     render() {
         const loading = this.state.loading;
         return (
+            <View style={styles.container}>
             <View style={styles.MainContainer}>
             {/* {loading &&
                 <View style={styles.loading}>
@@ -109,6 +110,7 @@ export class UserDetails extends React.Component {
                     visible={!loading}
                     user={this.state.user}
                 />
+            </View>
             </View>
         );
     }

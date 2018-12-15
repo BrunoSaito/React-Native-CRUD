@@ -4,13 +4,14 @@ import colors from './colors';
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: colors.white,
       alignItems: 'stretch',
     },
     MainContainer:
     {
       marginLeft: 10,
       marginRight: 10,
+      backgroundColor: colors.white,
       flex: 1,
       paddingTop: 10
     },
@@ -61,6 +62,11 @@ const styles = StyleSheet.create({
       paddingLeft: 10,
       paddingTop: 5
     },
+    footerLoading: {
+      paddingVertical: 20,
+      borderTopWidth: 1,
+      borderColor: colors.footer
+    },
     loading: {
       position: 'absolute',
       left: 0,
@@ -69,6 +75,15 @@ const styles = StyleSheet.create({
       bottom: 0,
       alignItems: 'center',
       justifyContent: 'center'
+    },
+    floatingButton: {
+      width: 40,  
+      height: 40,   
+      borderRadius: 30,            
+      backgroundColor: colors.red,                                    
+      position: 'absolute',                                          
+      bottom: 10,                                                    
+      right: 10, 
     }
   });
 

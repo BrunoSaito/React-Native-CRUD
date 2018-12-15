@@ -6,7 +6,8 @@ const colors = {
     grey: "grey",
     white: "white",
     transparent: "transparent",
-    light_red: "#ce4a4a"
+    light_red: "#ce4a4a",
+    footer: "#CED0CE"
   }
 
   export default colors;

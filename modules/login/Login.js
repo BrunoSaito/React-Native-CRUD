@@ -28,8 +28,7 @@ export class Login extends React.Component {
     return response.json();
   }
 
-  _onLoginClicked = () => {
-    Keyboard.dismiss()
+  login = () => {
     fetch("https://tq-template-server-sample.herokuapp.com/authenticate", {
       method: "POST",
       headers: {
@@ -37,10 +36,10 @@ export class Login extends React.Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        // password: this.state.password,
-        // email: this.state.email,
-        password: '1111',
-        email: 'admin@taqtile.com',
+        password: this.state.password,
+        email: this.state.email,
+        // password: '1111',
+        // email: 'admin@taqtile.com',
         rememberMe: false
       })
     })
@@ -61,8 +60,13 @@ export class Login extends React.Component {
     });
   }
 
+  onLoginClicked = () => {
+    Keyboard.dismiss()
+    this.login()
+  }
+
   validateEmail = () => {
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ 
 
     if (reg.test(this.state.email) === false) {
       this.setState({emailError: true})
@@ -123,14 +127,13 @@ export class Login extends React.Component {
           <View style={styles.buttonContainer}>
             <Button
               title="Entrar"
-              onPress={this._onLoginClicked}
+              onPress={this.onLoginClicked}
               titleStyle={{ fontWeight: "700" }}
               // disabled={this.state.emailError == true || this.state.passwordError == true || 
               //           this.state.password == "" || this.state.email == ""}
               buttonStyle={{
                 backgroundColor: colors.grey,
                 height: 45,
-                borderColor: "transparent",
                 borderWidth: 0,
                 borderRadius: 5
               }}
