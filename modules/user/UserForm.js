@@ -81,32 +81,31 @@ export class UserForm extends React.Component {
             method: "POST",
             headers: {
                 Authorization: this.state.token,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                name: 'usuario mockado',
-                password: 'senha1234',
-                email: 'ldiasidjas@dasdas.com',
-                role: 'admin'
-                // name: this.state.user,
-                // password: this.state.password,
-                // email: this.state.email,
-                // role: this.state.role
+                name: this.state.user,
+                password: this.state.password,
+                email: this.state.email,
+                role: this.state.role
             })
         })
         .then((response) => this.handleErrors(response))
         .then((responseJson) => {
-        if (responseJson.data.user.active == true) {
-            Store("set", "token", responseJson.data.token)
-            this.props.navigation.navigate("UserList")
-        }
-        else {
-            this.setState({errorMessage: "Ocorreu um erro. Tente novamente."})
-        }
+            console.log(responseJson)
+            console.log(responseJson.data.active)
+            if (responseJson.data.active == true) {
+                this.props.navigation.navigate("UserList")
+            }
+            else {
+                this.setState({errorMessage: "Ocorreu um erro. Tente novamente."})
+            }
         })
         .catch((error) => {
-            console.log(error)
             error.json().then((errorMessage) => {
                 this.setState({errorMessage: errorMessage.errors[0].message, valid: false})
+                console.log(errorMessage.errors[0].message)
             })
         });
     }
