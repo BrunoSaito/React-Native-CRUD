@@ -4,6 +4,7 @@ import { Input, Text, Button } from 'react-native-elements'
 import styles from '../../res/styles'
 import colors from '../../res/colors'
 import Store from '../../components/Store'
+import { handleErrors } from '../../components/ErrorHelpers'
 
 export class UserForm extends React.Component {
     static navigationOptions = ({ navigation }) => ({
@@ -18,9 +19,12 @@ export class UserForm extends React.Component {
                       passwordError: false,
                       email: "",
                       emailError: false,
-                      role: "",
+                      role: "Usuário",
                       token: "",
-                      loading: false}
+                      loading: false,
+                      errorMessage: "",
+                      valid: false
+                      }
     }
 
     validateUser = () => {
@@ -64,14 +68,6 @@ export class UserForm extends React.Component {
         })
     }
 
-    handleErrors = (response) => {
-        if (!response.ok) {
-            throw response;
-        }
-        Store("set", "token", response.headers.get("Authorization"))
-        return response.json();
-    }
-
     updateUser = () => {
 
     }
@@ -91,10 +87,8 @@ export class UserForm extends React.Component {
                 role: this.state.role
             })
         })
-        .then((response) => this.handleErrors(response))
+        .then((response) => handleErrors(response, true))
         .then((responseJson) => {
-            console.log(responseJson)
-            console.log(responseJson.data.active)
             if (responseJson.data.active == true) {
                 this.props.navigation.navigate("UserList")
             }
@@ -103,6 +97,7 @@ export class UserForm extends React.Component {
             }
         })
         .catch((error) => {
+            console.log(error)
             error.json().then((errorMessage) => {
                 this.setState({errorMessage: errorMessage.errors[0].message, valid: false})
                 console.log(errorMessage.errors[0].message)

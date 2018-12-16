@@ -1,5 +1,4 @@
 import Expo from 'expo'
-import React, { Component } from 'react'
 
 const Store = async (operation, key, value) => {
   let storedValue = ''

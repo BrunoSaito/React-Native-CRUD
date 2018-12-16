@@ -36,10 +36,10 @@ export class Login extends React.Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        password: this.state.password,
-        email: this.state.email,
-        // password: '1111',
-        // email: 'admin@taqtile.com',
+        // password: this.state.password,
+        // email: this.state.email,
+        password: '1111',
+        email: 'admin@taqtile.com',
         rememberMe: false
       })
     })
