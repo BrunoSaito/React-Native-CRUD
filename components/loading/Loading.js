@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { ActivityIndicator, View } from 'react-native'
-// import { Overlay } from 'react-native-elements'
+import { View } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay';
 
 export class Loading extends Component {

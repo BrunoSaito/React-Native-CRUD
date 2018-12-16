@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Text } from 'react-native'
 import { ButtonAlert, ButtonNeutral, Loading } from '../../components/index'
 import styles from '../../res/styles'
 import Store from '../../components/Store'

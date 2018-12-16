@@ -1,7 +1,7 @@
 import React from 'react'
 import { FlatList, View, Text, ActivityIndicator } from 'react-native'
 import { ListItem } from 'react-native-elements'
-import { FloatingButton } from '../../components/index'
+import { FloatingButton, Loading } from '../../components/index'
 import styles from '../../res/styles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Store from '../../components/Store'
@@ -10,25 +10,6 @@ import { handleErrors } from '../../components/ErrorHelpers'
 class UserListItem extends React.PureComponent {
   constructor(props) {
     super(props)
-  }
-
-  deleteUser = (userId) => {
-    fetch(`https://tq-template-server-sample.herokuapp.com/users/${userId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: this.props.token
-      }
-    })
-    .then((response) => handleErrors(response, true))
-    .then((responseJson) => {
-      this.props.handleUsers(responseJson.data.id)
-    })
-    .catch((error) => {
-      console.log(error)
-      error.json().then((errorMessage) => {
-        console.log("errorMessage " + errorMessage.errors[0].message)
-      })
-    })
   }
 
   onPressListItem = () => {
@@ -42,6 +23,28 @@ class UserListItem extends React.PureComponent {
   onPressDelete = (index) => {
     console.log("Deletar usuário " + index.id)
     this.deleteUser(index.id)
+  }
+
+  deleteUser = (userId) => {
+    this.props.handleLoading(true)
+    fetch(`https://tq-template-server-sample.herokuapp.com/users/${userId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: this.props.token
+      }
+    })
+    .then((response) => handleErrors(response, true))
+    .then((responseJson) => {
+      this.props.handleUsers(responseJson.data.id)
+      this.props.handleLoading(false)
+    })
+    .catch((error) => {
+      console.log(error)
+      this.props.handleLoading(false)
+      error.json().then((errorMessage) => {
+        console.log("errorMessage " + errorMessage.errors[0].message)
+      })
+    })
   }
 
   render() {
@@ -83,7 +86,8 @@ export class UserList extends React.Component {
     this.state = {users: [],
                   page: 0,
                   totalPages: 0,
-                  loading: false,
+                  loadingFooter: false,
+                  loadingList: false,
                   token: ""}
   }
 
@@ -91,10 +95,15 @@ export class UserList extends React.Component {
     this.setState({users: [...this.state.users].filter(item => item.id != userId)})
   }
 
+  handleLoading = (isLoading) => {
+    console.log("isLoading : " + isLoading)
+    this.setState({loadingList: isLoading})
+  }
+
   getUsersList = () => {
     const { page, totalPages } = this.state
     if (page <= totalPages) {
-      this.setState({ loading: true })
+      this.setState({ loadingFooter: true })
       const url = `https://tq-template-server-sample.herokuapp.com/users?pagination={\"page\": ${page}, \"window\": 10}`
       fetch(url, {
         method: "GET",
@@ -107,11 +116,11 @@ export class UserList extends React.Component {
         this.setState({
           users: [...this.state.users, ...responseJson.data],
           totalPages: responseJson.pagination.totalPages,
-          loading: false
+          loadingFooter: false
         })
       }) 
       .catch((error) => {
-        this.setState({ loading: false })
+        this.setState({ loadingFooter: false })
         error.json().then((errorMessage) => {
           console.log("errorMessage" + errorMessage)
         })
@@ -119,7 +128,7 @@ export class UserList extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     Store("get", "token").then((token) => {
       this.setState({token: token})
       this.getUsersList()
@@ -142,7 +151,7 @@ export class UserList extends React.Component {
   }
 
   renderFooter = () => {
-    if (!this.state.loading) return null;
+    if (!this.state.loadingFooter) return null;
 
     return (
       <View
@@ -154,13 +163,12 @@ export class UserList extends React.Component {
 
   renderItem = ({ item, index }) => (
     <UserListItem 
-      {...this.props}
-      state={this.state}
-      item={item}
-      index={index}
-      navigation={this.props.navigation}
-      token={this.state.token}
+      item = {item}
+      index = {index}
+      navigation = {this.props.navigation}
+      token = {this.state.token}
       handleUsers = {this.handleUsers.bind(this)}
+      handleLoading = {this.handleLoading.bind(this)}
     />
   )
 
@@ -168,8 +176,13 @@ export class UserList extends React.Component {
     return (
       <View style={styles.container}>
       <View style={{padding: 10}}>
+        <Loading
+          loading={this.state.loadingList}
+          text="Carregando..."
+        />
         <FlatList
           // keyExtractor={ this.keyExtractor }
+          visible = {!this.state.loadingList}
           keyExtractor={ item => item.id.toString() }
           data={ this.state.users }
           renderItem={ this.renderItem }
